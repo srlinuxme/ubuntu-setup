@@ -141,6 +141,13 @@ apt_update_once() {
   fi
 }
 
+# Força apt-get update após adicionar/alterar um repositório APT.
+apt_refresh() {
+  admin apt-get -o DPkg::Lock::Timeout=120 update
+  APT_UPDATED=1
+  : >"$RUN_DIR/.apt-updated"
+}
+
 apt_install() {
   local missing=() package
   for package in "$@"; do
@@ -504,7 +511,7 @@ Architectures: amd64
 Signed-By: /etc/apt/keyrings/docker.asc
 EOF_DOCKER
   write_root_file_if_changed "$source" /etc/apt/sources.list.d/docker.sources 0644
-  apt_update_once
+  apt_refresh
   install_deb docker-desktop \
     https://desktop.docker.com/linux/main/amd64/docker-desktop-amd64.deb
 }
@@ -519,6 +526,7 @@ stage_lens() {
   local source="$CACHE_DIR/lens.list"
   printf '%s\n' 'deb [arch=amd64 signed-by=/usr/share/keyrings/lens-archive-keyring.gpg] https://downloads.k8slens.dev/apt/debian stable main' >"$source"
   write_root_file_if_changed "$source" /etc/apt/sources.list.d/lens.list 0644
+  apt_refresh
   apt_install lens
 }
 
