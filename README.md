@@ -48,6 +48,31 @@ Há também etapas opcionais para GRUB, Codex App e Claude Desktop. Elas não fa
 
 ## Uso
 
+### Execução remota (sem clonar)
+
+O script pode ser executado diretamente do GitHub, sem clonar o repositório. Rode como usuário normal (sem `sudo`); o próprio script pede autenticação quando necessário:
+
+```bash
+bash <(curl -s "https://raw.githubusercontent.com/srlinuxme/ubuntu-setup/refs/heads/main/install_ubuntu_packages.sh")
+```
+
+Sem argumentos, isso apenas mostra o plano (`--plan all`). Passe as opções depois do comando, como na execução local:
+
+```bash
+# Auditar o estado atual
+bash <(curl -s "https://raw.githubusercontent.com/srlinuxme/ubuntu-setup/refs/heads/main/install_ubuntu_packages.sh") --audit
+
+# Aplicar o perfil padrão
+bash <(curl -s "https://raw.githubusercontent.com/srlinuxme/ubuntu-setup/refs/heads/main/install_ubuntu_packages.sh") --apply all
+
+# Aplicar somente algumas etapas
+bash <(curl -s "https://raw.githubusercontent.com/srlinuxme/ubuntu-setup/refs/heads/main/install_ubuntu_packages.sh") --apply chrome vscode
+```
+
+Use `bash <(...)`, não `curl ... | bash`: a substituição de processo mantém o terminal como entrada padrão, permitindo que o `sudo` peça a digital ou a senha. Para inspecionar o script antes, baixe-o, leia e execute localmente.
+
+### Execução local
+
 Clone o repositório e entre no diretório:
 
 ```bash

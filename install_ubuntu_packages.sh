@@ -19,6 +19,7 @@ RESOLUTION=''
 CODEX_DEB_URL=''
 CLAUDE_DESKTOP_DEB_URL=''
 APT_UPDATED=0
+REMOTE_SCRIPT_URL='https://raw.githubusercontent.com/srlinuxme/ubuntu-setup/refs/heads/main/install_ubuntu_packages.sh'
 
 usage() {
   cat <<'HELP'
@@ -167,7 +168,8 @@ backup_file() {
 }
 
 install_deb() {
-  local package=$1 url=$2 destination="$CACHE_DIR/$package.deb"
+  local package=$1 url=$2
+  local destination="$CACHE_DIR/$package.deb"
   pkg_installed "$package" && return 0
   [[ -n $url ]] || { printf 'URL oficial obrigatória para %s.\n' "$package" >&2; return 3; }
   apt_install curl ca-certificates
@@ -819,7 +821,8 @@ printf 'Validando acesso administrativo. Use a digital ou a senha quando solicit
 sudo -v
 
 run_stage() {
-  local stage=$1 function_name="stage_${stage//-/_}" log="$RUN_DIR/$stage.log" rc
+  local stage=$1
+  local function_name="stage_${stage//-/_}" log="$RUN_DIR/$stage.log" rc
   printf 'RUN %s (log: %s)\n' "$stage" "$log"
   set +e
   (
@@ -840,6 +843,10 @@ for stage in "${STAGES[@]}"; do
 done
 
 printf '\nSetup concluído. Auditoria recomendada:\n'
-printf '  bash %q --audit\n' "$0"
+if [[ -f $0 ]]; then
+  printf '  bash %q --audit\n' "$0"
+else
+  printf '  bash <(curl -fsSL %q) --audit\n' "$REMOTE_SCRIPT_URL"
+fi
 printf 'Logout/login pode ser necessário para shell e grupos. Nenhum reboot foi executado.\n'
 exit 0
